@@ -22,6 +22,9 @@ description: Part of the trading skill. Nightly workflow that reads her Schwab p
 - **Next day**: in thinkorswim, paste `NightlyPlan.ts` once (Charts > Studies > Edit Studies > Create), flip through the watchlist to see each symbol's entry, stop and target lines and get alerts. Enter approved BUYs as **limit orders** and set the stop as a conditional/bracket order. Confirm the order dialog.
 - Log every trade (taken or skipped) in the paper ledger with `Signal source` = `nightly-plan`.
 
+## Phone alerts
+The report ends with an "Alerts to set" table (BUY alert at the entry price, SELL alert at the stop). She creates them as price alerts in the thinkorswim/Schwab mobile app so they push to her phone; the API cannot create alerts, and study alerts from the thinkScript are desktop-only as far as is known. Verify with a test alert and say plainly if delivery is uncertain. She then enters the trade herself on her phone.
+
 ## Setup (she does this, not Claude)
 - Register a Schwab developer app (market data + read-only accounts), then `pip install schwab-py pandas numpy`.
 - Create the token file once with schwab-py's login flow, and set env vars `SCHWAB_APP_KEY`, `SCHWAB_APP_SECRET`, `SCHWAB_TOKEN_PATH`. Never paste them in chat or commit them. The refresh token expires after about 7 days, so she logs in again weekly.

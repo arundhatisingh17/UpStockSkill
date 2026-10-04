@@ -199,6 +199,18 @@ def main():
     for r in rows:
         md.append(f"| {r['sym']} | {r['close']:.2f} | {r['trend']} | {r['adx']} | **{r['decision']}** | {r['why'] or '-'} | "
                   f"{r['entry'] or '-'} | {r['stop'] if r['stop'] else '-'} | {r['shares'] or '-'} | {r['risk'] or '-'} | {r.get('held', '-')} |")
+    alerts = []
+    for r in rows:
+        if r["decision"] == "BUY CANDIDATE" and r["entry"]:
+            alerts.append(f"| {r['sym']} | BUY alert | Price at or below {r['entry']} | Then enter limit buy {r['shares']} sh, stop {r['stop']} |")
+        if r["decision"] == "HOLD" and r["stop"]:
+            alerts.append(f"| {r['sym']} | SELL alert (stop) | Price at or below {round(r['stop'], 2)} | Review and sell if the thesis is broken |")
+        if r["decision"] == "REVIEW EXIT":
+            alerts.append(f"| {r['sym']} | SELL review | Open the position at the next open | {r['why']} |")
+    md += ["", "## Alerts to set (for phone push notifications)",
+           "Create these as price alerts in the thinkorswim or Schwab mobile app so they push to your phone, and send yourself a test alert first to confirm it arrives. "
+           "The thinkScript study alerts run on the desktop; do not count on them reaching your phone.",
+           "| Symbol | Type | Condition | Then |", "|---|---|---|---|"] + (alerts or ["| - | - | - | none today |"])
     md += ["", "## Notes per symbol"]
     for r in rows:
         md.append(f"**{r['sym']}**: " + " | ".join(r["notes"]))
