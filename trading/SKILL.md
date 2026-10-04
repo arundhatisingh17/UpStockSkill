@@ -24,9 +24,19 @@ description: Trading workflow for Arundhati's Charles Schwab / thinkorswim accou
 4. **Checklist before she sends**: size within her stated max loss, bid/ask spread sane, correct account, correct contract (expiry/strike/call-put), stop attached, no earnings surprise.
 5. **Journal**: offer to append the plan to `~/Desktop/trading-journal.md` (date, ticker, thesis, entry/stop/target, size, outcome, lesson). Review closed trades for process, not just P/L.
 
+## Portfolio structure
+- **Long-term sleeve** (default 60%): stocks chosen by `equity-research`, held for the long run, adding on a schedule. Sell a long-term holding only on a clear thesis break or a Dow Theory exit she approves.
+- **Swing sleeve** (default 40%), positional holds of days to weeks, split into:
+  - **Trend following** (default half): `trend-following` + `trend-identification`.
+  - **Mean reversion** (default half): `mean-reversion`.
+- **Which swing strategy applies?** Use ADX: above 25 = trend following; below 20 with Hurst < 0.5 = mean reversion; in between = wait. Never run both on the same stock at once.
+- Weights are editable defaults, not recommendations. Cap a single position at about 5% and total risk per trade at about 1% of the account.
+
 ## Sub-skills
 - **Trend identification** (`trend-identification/SKILL.md`): Dow Theory uptrend/downtrend/sideways classification and BUY/SELL/STOP signals. Use it whenever the question is about trend, entries, or exits.
 - **Equity research** (`equity-research/SKILL.md`): sourced fundamental report on a ticker. Run it before trend signals decide an entry.
+- **Trend following** (`trend-following/SKILL.md`): ADX, moving averages, breakouts, ATR stops and sizing.
+- **Mean reversion** (`mean-reversion/SKILL.md`): z-score, half-life, Hurst; buy dips that should snap back.
 
 ## Useful tools
 - **thinkorswim**: Scan tab (stock hacker/option hacker), Studies, Conditional orders, paperMoney for dry runs. Claude can write **thinkScript** for custom studies, scans, and alerts. Recommend she rehearse new strategies in paperMoney first.
