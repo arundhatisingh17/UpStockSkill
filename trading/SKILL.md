@@ -26,6 +26,7 @@ description: Trading workflow for Arundhati's Charles Schwab / thinkorswim accou
 
 ## Sub-skills
 - **Trend identification** (`trend-identification/SKILL.md`): Dow Theory uptrend/downtrend/sideways classification and BUY/SELL/STOP signals. Use it whenever the question is about trend, entries, or exits.
+- **Equity research** (`equity-research/SKILL.md`): sourced fundamental report on a ticker. Run it before trend signals decide an entry.
 
 ## Useful tools
 - **thinkorswim**: Scan tab (stock hacker/option hacker), Studies, Conditional orders, paperMoney for dry runs. Claude can write **thinkScript** for custom studies, scans, and alerts. Recommend she rehearse new strategies in paperMoney first.
