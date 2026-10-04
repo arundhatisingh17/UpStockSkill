@@ -1,6 +1,6 @@
 ---
 name: trading
-description: Trading workflow for Arundhati's Charles Schwab / thinkorswim account, with sub-skills for equity research, trend identification (Dow Theory), trend following, mean reversion, RSI, and a paper-trading ledger. Use when she asks about a stock, ticker, trend, oversold/overbought, RSI, divergence, dip, momentum, portfolio split, a trade idea, wants a trade plan, order ticket to enter herself, position sizing, options payoff/greeks math, a watchlist or thinkorswim scan/study (thinkScript), a trade journal entry, a post-trade review, or a backtest of a strategy. Prepares and analyzes; never places orders.
+description: Trading workflow for Arundhati's Charles Schwab / thinkorswim account, with sub-skills for equity research, trend identification (Dow Theory), trend following, mean reversion, RSI, Bollinger Bands, and a paper-trading ledger. Use when she asks about a stock, ticker, trend, oversold/overbought, RSI, Bollinger Bands, squeeze, breakout, divergence, dip, momentum, portfolio split, a trade idea, wants a trade plan, order ticket to enter herself, position sizing, options payoff/greeks math, a watchlist or thinkorswim scan/study (thinkScript), a trade journal entry, a post-trade review, or a backtest of a strategy. Prepares and analyzes; never places orders.
 ---
 
 # Trading (Schwab / thinkorswim)
@@ -29,7 +29,7 @@ description: Trading workflow for Arundhati's Charles Schwab / thinkorswim accou
 - **Swing sleeve** (default 40%), positional holds of days to weeks, split into:
   - **Trend following** (default half): `trend-following` + `trend-identification`.
   - **Mean reversion** (default half): `mean-reversion`.
-- **Which swing strategy applies?** Use ADX: above 25 = trend following; below 20 with Hurst < 0.5 = mean reversion; in between = wait. Never run both on the same stock at once.
+- **Which swing strategy applies?** Use ADX: above 25 = trend following; below 20 with Hurst < 0.5 = mean reversion; in between = wait. Volatile stocks coming out of a squeeze can also use `bollinger-bands` (a trend-following variant). Never run both mean reversion and a breakout strategy on the same stock at once.
 - Weights are editable defaults, not recommendations. Cap a single position at about 5% and total risk per trade at about 1% of the account.
 
 ## Sub-skills
@@ -38,6 +38,7 @@ description: Trading workflow for Arundhati's Charles Schwab / thinkorswim accou
 - **Trend following** (`trend-following/SKILL.md`): ADX, moving averages, breakouts, ATR stops and sizing.
 - **Mean reversion** (`mean-reversion/SKILL.md`): z-score, half-life, Hurst; buy dips that should snap back.
 - **RSI** (`rsi/SKILL.md`): oversold/overbought, Hayden 40/60 regime, divergences, with penny-stock, intraday and catalyst guardrails. Confirmation layer only.
+- **Bollinger Bands** (`bollinger-bands/SKILL.md`): volatility-breakout entries on volatile stocks, stop at breakout low, middle-band trail, sideways false-signal check.
 
 ## Useful tools
 - **thinkorswim**: Scan tab (stock hacker/option hacker), Studies, Conditional orders, paperMoney for dry runs. Claude can write **thinkScript** for custom studies, scans, and alerts. Recommend she rehearse new strategies in paperMoney first.

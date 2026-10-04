@@ -11,7 +11,7 @@ The skill splits a portfolio into two parts:
 | Part | Goal | How long you hold | Skills used |
 |---|---|---|---|
 | **Long-term** (default 60%) | Own good companies and let them grow | Months to years | Equity Research |
-| **Swing** (default 40%) | Capture price moves | Days to weeks | Trend Identification, Trend Following, Mean Reversion, RSI |
+| **Swing** (default 40%) | Capture price moves | Days to weeks | Trend Identification, Trend Following, Mean Reversion, RSI, Bollinger Bands |
 
 The swing part is split again: half uses **trend following** (ride a move) and half uses **mean reversion** (buy a dip that should bounce back). The percentages are just starting points that you can change.
 
@@ -52,7 +52,14 @@ RSI is a 0-100 gauge of momentum.
 - **Built-in safety checks:** it refuses penny stocks, thinly traded stocks, charts shorter than 120 days, and short 5-10 minute charts. It also asks you to check the news, because a move caused by earnings or hype isn't a normal signal.
 RSI is a **second opinion**, never a trade trigger by itself.
 
-### 6. Paper Trading Ledger: "Practice without real money"
+### 6. Bollinger Bands: "Is a quiet stock about to make a big move?"
+Bollinger Bands draw an upper line, a lower line and a middle line (the 20-day average) around the price. When the bands squeeze tight, the stock is quiet. When the price **closes above the upper band**, volatility is picking up and a run may be starting.
+- **Buy** on that breakout. Put your **stop-loss at the low of the breakout day**.
+- **Hold** while the price stays above the middle line. **Sell** if it closes below it (a "trailing stop").
+- **Best for volatile stocks** (big daily swings), the opposite of RSI, which suits calmer stocks.
+- **Biggest risk:** in a sideways market the price pokes above the band and falls right back. The skill checks for this and shows how often the stock's past breakouts failed.
+
+### 7. Paper Trading Ledger: "Practice without real money"
 A spreadsheet that logs simulated trades, using realistic prices (buy at the ask, sell at the bid), and shows your weekly and compounded returns. Run it for at least 100 trades or a few months before using real funds, and compare yourself to simply holding the S&P 500 (SPY).
 
 ## How the skills work together
@@ -62,6 +69,7 @@ Equity Research  -> picks stocks worth watching
         |
    Which swing strategy fits?  (check ADX)
    ADX > 25  -> Trend Following + Trend Identification
+               (volatile stock after a squeeze: Bollinger Bands)
    ADX < 20  -> Mean Reversion
    in between -> wait
         |
@@ -85,6 +93,7 @@ A stock should pass **both** a business check (Equity Research) and a timing che
    python3 trading/trend-following/trend_following.py prices.csv
    python3 trading/mean-reversion/mean_reversion.py prices.csv
    python3 trading/rsi/rsi.py prices.csv --catalyst no
+   python3 trading/bollinger-bands/bollinger.py prices.csv
    ```
    These need Python with `pandas` and `numpy`.
 4. Log the trades in the paper ledger (`python3 paper-trading/build_ledger.py` creates it).
@@ -104,5 +113,6 @@ trading/
   trend-following/            trend strength + trend_following.py
   mean-reversion/             dip buying + mean_reversion.py
   rsi/                        momentum gauge + rsi.py
+  bollinger-bands/            volatility breakouts + bollinger.py
 paper-trading/build_ledger.py simulated-trade spreadsheet
 ```
