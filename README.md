@@ -11,7 +11,7 @@ The skill splits a portfolio into two parts:
 | Part | Goal | How long you hold | Skills used |
 |---|---|---|---|
 | **Long-term** (default 60%) | Own good companies and let them grow | Months to years | Equity Research |
-| **Swing** (default 40%) | Capture price moves | Days to weeks | Trend Identification, Trend Following, Mean Reversion |
+| **Swing** (default 40%) | Capture price moves | Days to weeks | Trend Identification, Trend Following, Mean Reversion, RSI |
 
 The swing part is split again: half uses **trend following** (ride a move) and half uses **mean reversion** (buy a dip that should bounce back). The percentages are just starting points that you can change.
 
@@ -44,7 +44,15 @@ It looks at the "average" three ways (simple, exponential and weighted moving av
 This is **not risk-free**: a stock that is really starting a long decline keeps falling.
 *Use it when ADX is below 20 (no trend).*
 
-### 5. Paper Trading Ledger: "Practice without real money"
+### 5. RSI: "Is the stock moving too fast in one direction?"
+RSI is a 0-100 gauge of momentum.
+- **Below 30 = oversold** (may be due for a bounce). **Crossing above 70 = overbought** (may be due for a pullback).
+- **40-60 means sideways, above 60 bullish, below 40 bearish** (a rule of thumb from John Hayden).
+- **Divergence:** if the price hits a new high but RSI doesn't, buying momentum is fading (bearish). If the price hits a new low but RSI doesn't, selling momentum is fading (bullish). If the bearish warning keeps repeating in a strong uptrend, it's usually a false alarm, so the skill counts them and tells you not to sell on that alone.
+- **Built-in safety checks:** it refuses penny stocks, thinly traded stocks, charts shorter than 120 days, and short 5-10 minute charts. It also asks you to check the news, because a move caused by earnings or hype isn't a normal signal.
+RSI is a **second opinion**, never a trade trigger by itself.
+
+### 6. Paper Trading Ledger: "Practice without real money"
 A spreadsheet that logs simulated trades, using realistic prices (buy at the ask, sell at the bid), and shows your weekly and compounded returns. Run it for at least 100 trades or a few months before using real funds, and compare yourself to simply holding the S&P 500 (SPY).
 
 ## How the skills work together
@@ -56,6 +64,8 @@ Equity Research  -> picks stocks worth watching
    ADX > 25  -> Trend Following + Trend Identification
    ADX < 20  -> Mean Reversion
    in between -> wait
+        |
+RSI (confirmation) -> second opinion on any signal
         |
 Paper Trading Ledger -> record and measure the results
 ```
@@ -74,6 +84,7 @@ A stock should pass **both** a business check (Equity Research) and a timing che
    python3 trading/trend-identification/trend_detector.py prices.csv
    python3 trading/trend-following/trend_following.py prices.csv
    python3 trading/mean-reversion/mean_reversion.py prices.csv
+   python3 trading/rsi/rsi.py prices.csv --catalyst no
    ```
    These need Python with `pandas` and `numpy`.
 4. Log the trades in the paper ledger (`python3 paper-trading/build_ledger.py` creates it).
@@ -92,5 +103,6 @@ trading/
   trend-identification/       Dow Theory + trend_detector.py
   trend-following/            trend strength + trend_following.py
   mean-reversion/             dip buying + mean_reversion.py
+  rsi/                        momentum gauge + rsi.py
 paper-trading/build_ledger.py simulated-trade spreadsheet
 ```
