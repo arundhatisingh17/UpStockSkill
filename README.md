@@ -11,7 +11,7 @@ The skill splits a portfolio into two parts:
 | Part | Goal | How long you hold | Skills used |
 |---|---|---|---|
 | **Long-term** (default 60%) | Own good companies and let them grow | Months to years | Equity Research |
-| **Swing** (default 40%) | Capture price moves | Days to weeks | Trend Identification, Trend Following, Mean Reversion, RSI, Bollinger Bands |
+| **Swing** (default 40%) | Capture price moves | Days to weeks | Trend Identification, Trend Following, Mean Reversion, RSI, Bollinger Bands, Pivot Points |
 
 The swing part is split again: half uses **trend following** (ride a move) and half uses **mean reversion** (buy a dip that should bounce back). The percentages are just starting points that you can change.
 
@@ -59,14 +59,22 @@ Bollinger Bands draw an upper line, a lower line and a middle line (the 20-day a
 - **Best for volatile stocks** (big daily swings), the opposite of RSI, which suits calmer stocks.
 - **Biggest risk:** in a sideways market the price pokes above the band and falls right back. The skill checks for this and shows how often the stock's past breakouts failed.
 
-### 7. Nightly Plan: "What do I do tomorrow?"
+### 7. Pivot Points: "Where are the support and resistance levels?"
+Support is a price where many people are willing to buy, and resistance is a price where many are willing to sell. Pivot points turn yesterday's high, low and close into a ladder of levels: a central pivot (PP), three supports below (S1, S2, S3) and three resistances above (R1, R2, R3). If price opens or breaks above R1 it leans up; below S1 it leans down.
+The skill looks for two entries, **only in a strong, confirmed uptrend**:
+- a **pullback** that dips to a support level and bounces, or
+- a **breakout** that closes above resistance.
+Then it sets a **stop-loss just below the support**, tells you to **sell about half at the next resistance**, and keep the rest with a **trailing stop at the support** below the price. It skips trades that don't offer at least $1.50 of reward for every $1 risked.
+**Important:** pivots come from past prices, so check the news for overnight surprises. They show where price may react, never a buy or sell signal on their own.
+
+### 8. Nightly Plan: "What do I do tomorrow?"
 Each evening it reads your positions and recent prices from your Schwab account (**read-only**), runs every skill above, and produces:
 - an **order sheet**: for each stock, a decision (buy candidate, hold, or review exit), a limit price, a stop-loss, how many shares to keep your loss near 1% of the account, and notes;
 - a **thinkorswim script** (thinkScript) that draws your entry, stop and target lines on the chart and sets alerts.
 
 You review the sheet at night and enter the orders yourself the next day. Be aware that thinkScript **cannot place orders**; it only draws and alerts, and nothing here ever trades for you. The Schwab connection needs your own developer app and keys, which stay on your computer and are never committed to this repo.
 
-### 8. Paper Trading Ledger: "Practice without real money"
+### 9. Paper Trading Ledger: "Practice without real money"
 A spreadsheet that logs simulated trades, using realistic prices (buy at the ask, sell at the bid), and shows your weekly and compounded returns. Run it for at least 100 trades or a few months before using real funds, and compare yourself to simply holding the S&P 500 (SPY).
 
 ## How the skills work together
@@ -103,6 +111,7 @@ A stock should pass **both** a business check (Equity Research) and a timing che
    python3 trading/mean-reversion/mean_reversion.py prices.csv
    python3 trading/rsi/rsi.py prices.csv --catalyst no
    python3 trading/bollinger-bands/bollinger.py prices.csv
+   python3 trading/pivot-points/pivot_points.py prices.csv
    python3 trading/nightly-plan/nightly_plan.py --csv-dir ./prices --watchlist AAPL,MSFT
    ```
    These need Python with `pandas` and `numpy`.
@@ -124,6 +133,7 @@ trading/
   mean-reversion/             dip buying + mean_reversion.py
   rsi/                        momentum gauge + rsi.py
   bollinger-bands/            volatility breakouts + bollinger.py
+  pivot-points/               support/resistance + pivot_points.py
   nightly-plan/               order sheet + thinkScript + nightly_plan.py
 paper-trading/build_ledger.py simulated-trade spreadsheet
 ```

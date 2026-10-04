@@ -39,6 +39,7 @@ TF = load_mod("trend-following/trend_following.py", "tf")
 MR = load_mod("mean-reversion/mean_reversion.py", "mr")
 RS = load_mod("rsi/rsi.py", "rs")
 BB = load_mod("bollinger-bands/bollinger.py", "bb")
+PV = load_mod("pivot-points/pivot_points.py", "pv")
 
 
 # ---------- data (read-only) ----------
@@ -86,6 +87,7 @@ def evaluate(sym, df, held):
     mr = MR.analyze(df["close"].values)
     rs = RS.analyze(df, catalyst="unknown")
     bb = BB.analyze(df)
+    pv = PV.analyze(df)
     notes = []
 
     exits = []
@@ -107,6 +109,8 @@ def evaluate(sym, df, held):
     if bb.get("status") == "OK" and bb["action"].startswith("BREAKOUT ENTRY") and "SIDEWAYS" not in bb["action"]:
         paths.append(("Bollinger breakout", round(float(last["low"]), 2)))
 
+    if pv.get("decision", "").startswith("LONG"):
+        paths.insert(0, ("Pivot " + pv["setup"].split()[0].lower(), pv["stop"]))
     kinds = {p[0].split()[0] for p in paths}
     conflict = "Mean" in kinds and ("Bollinger" in kinds or "Trend" in kinds)
     if rs.get("status") == "REJECTED":
@@ -129,7 +133,7 @@ def evaluate(sym, df, held):
     elif paths:
         decision, why, stop = "BUY CANDIDATE", " + ".join(p[0] for p in paths), paths[0][1]
     return {"sym": sym, "close": close, "trend": trend, "adx": tf["adx"], "decision": decision, "why": why,
-            "stop": stop, "paths": len(paths), "mr_target": mr["target_exit"], "notes": notes,
+            "stop": stop, "paths": len(paths), "mr_target": mr["target_exit"], "pv": pv, "notes": notes,
             "date": str(last["date"])}
 
 
@@ -185,6 +189,9 @@ def main():
             r["entry"] = round(r["close"], 2)
             r["shares"], r["risk"] = size(equity, r["entry"], r["stop"])
             r["target"] = round(r["mr_target"], 2) if "Mean" in r["why"] else None
+            if "Pivot" in r["why"] and r["pv"].get("exit_half_at"):
+                r["target"] = float(r["pv"]["exit_half_at"].split()[1])
+                r["notes"].append(f"Pivot plan: sell about half at {r['pv']['exit_half_at']}, trail the rest at {r['pv']['trail_rest_at_support']} (raise it to each new support as price climbs)")
         if r["sym"] in positions:
             p = positions[r["sym"]]
             r["held"] = f"{p['qty']} sh @ {p['avg']} ({(r['close'] / p['avg'] - 1) * 100:+.1f}%)" if p.get("avg") else f"{p['qty']} sh"
