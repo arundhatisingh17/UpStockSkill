@@ -40,6 +40,7 @@ Expect to be wrong more often than right (about 35-45% wins), but winners are bi
 
 ### 4. Mean Reversion: "Has the stock dropped too far, too fast?"
 Prices sometimes overshoot because of panic, then drift back to their average. This skill measures how far below average the price is (a "z-score"), checks that the stock actually tends to bounce back, then flags a buy when it is unusually low (z below -2) and an exit when it returns to normal. If it keeps falling (z below -3), it says to stop out.
+It looks at the "average" three ways (simple, exponential and weighted moving averages) and only flags a buy when at least two agree, so one noisy reading doesn't trigger a trade. It also warns if the short-term average is sinking well below the longer one, which can mean a real downtrend is starting.
 This is **not risk-free**: a stock that is really starting a long decline keeps falling.
 *Use it when ADX is below 20 (no trend).*
 

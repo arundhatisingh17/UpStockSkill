@@ -17,7 +17,13 @@ Prices sometimes overshoot because of panic or hype, then drift back toward thei
 - The script requires Hurst < 0.5 and a sane half-life. Hurst alone can mislead on drifting stocks, so the half-life check is a second gate.
 
 ## Step 2: how stretched is it?
-`z = (price - rolling mean) / rolling std` (default 20 days).
+`z = (price - rolling mean) / rolling std` (default 20 days). The "mean" can be defined three ways (`--mean sma|ema|wma`, default sma):
+- **SMA**: plain average, every day weighted equally. Slowest and smoothest.
+- **EMA**: recent days weighted more (exponentially). Reacts faster, noisier.
+- **WMA**: recent days weighted more (linearly). In between.
+The script prints all three z-scores. These are the same prices seen three ways, not three independent confirmations. A buy needs z <= -2 AND at least 2 of the 3 averages agreeing; if only the fast EMA is stretched, treat it as noise.
+`ema_vs_sma_gap_pct` is a speed check: if the EMA sits well below the SMA (gap under about -1.5%, `trend_warning`), a downtrend may be developing and the dip may not revert.
+Moving averages describe where price has been; they do not predict anomalies. The Hurst/half-life gate in Step 1 is what decides if reversion is plausible.
 
 ## Step 3: rules (long only)
 - z <= -2: **BUY** signal.
@@ -27,8 +33,8 @@ Prices sometimes overshoot because of panic or hype, then drift back toward thei
 - Short side and pairs trades need a margin account; mention and skip unless she asks.
 
 ## Run
-`python3 mean_reversion.py prices.csv --lookback 20`
-Prints Hurst, half-life, variance ratio, z-score, whether it reverts, action and the target exit (the mean).
+`python3 mean_reversion.py prices.csv --lookback 20 --mean sma`
+Prints Hurst, half-life, variance ratio, the SMA/EMA/WMA z-scores, trend warning, whether it reverts, action and the target exit (the mean).
 
 ## When not to use
 Strong trends (use trend-following), earnings or news shocks, low-liquidity stocks with wide spreads, and regime changes. Use ADX < 20 as the green light; ADX > 25 means stand aside.
