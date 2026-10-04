@@ -59,7 +59,14 @@ Bollinger Bands draw an upper line, a lower line and a middle line (the 20-day a
 - **Best for volatile stocks** (big daily swings), the opposite of RSI, which suits calmer stocks.
 - **Biggest risk:** in a sideways market the price pokes above the band and falls right back. The skill checks for this and shows how often the stock's past breakouts failed.
 
-### 7. Paper Trading Ledger: "Practice without real money"
+### 7. Nightly Plan: "What do I do tomorrow?"
+Each evening it reads your positions and recent prices from your Schwab account (**read-only**), runs every skill above, and produces:
+- an **order sheet**: for each stock, a decision (buy candidate, hold, or review exit), a limit price, a stop-loss, how many shares to keep your loss near 1% of the account, and notes;
+- a **thinkorswim script** (thinkScript) that draws your entry, stop and target lines on the chart and sets alerts.
+
+You review the sheet at night and enter the orders yourself the next day. Be aware that thinkScript **cannot place orders**; it only draws and alerts, and nothing here ever trades for you. The Schwab connection needs your own developer app and keys, which stay on your computer and are never committed to this repo.
+
+### 8. Paper Trading Ledger: "Practice without real money"
 A spreadsheet that logs simulated trades, using realistic prices (buy at the ask, sell at the bid), and shows your weekly and compounded returns. Run it for at least 100 trades or a few months before using real funds, and compare yourself to simply holding the S&P 500 (SPY).
 
 ## How the skills work together
@@ -74,6 +81,8 @@ Equity Research  -> picks stocks worth watching
    in between -> wait
         |
 RSI (confirmation) -> second opinion on any signal
+        |
+Nightly Plan -> order sheet + thinkScript for you to review
         |
 Paper Trading Ledger -> record and measure the results
 ```
@@ -94,6 +103,7 @@ A stock should pass **both** a business check (Equity Research) and a timing che
    python3 trading/mean-reversion/mean_reversion.py prices.csv
    python3 trading/rsi/rsi.py prices.csv --catalyst no
    python3 trading/bollinger-bands/bollinger.py prices.csv
+   python3 trading/nightly-plan/nightly_plan.py --csv-dir ./prices --watchlist AAPL,MSFT
    ```
    These need Python with `pandas` and `numpy`.
 4. Log the trades in the paper ledger (`python3 paper-trading/build_ledger.py` creates it).
@@ -114,5 +124,6 @@ trading/
   mean-reversion/             dip buying + mean_reversion.py
   rsi/                        momentum gauge + rsi.py
   bollinger-bands/            volatility breakouts + bollinger.py
+  nightly-plan/               order sheet + thinkScript + nightly_plan.py
 paper-trading/build_ledger.py simulated-trade spreadsheet
 ```

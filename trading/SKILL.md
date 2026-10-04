@@ -1,6 +1,6 @@
 ---
 name: trading
-description: Trading workflow for Arundhati's Charles Schwab / thinkorswim account, with sub-skills for equity research, trend identification (Dow Theory), trend following, mean reversion, RSI, Bollinger Bands, and a paper-trading ledger. Use when she asks about a stock, ticker, trend, oversold/overbought, RSI, Bollinger Bands, squeeze, breakout, divergence, dip, momentum, portfolio split, a trade idea, wants a trade plan, order ticket to enter herself, position sizing, options payoff/greeks math, a watchlist or thinkorswim scan/study (thinkScript), a trade journal entry, a post-trade review, or a backtest of a strategy. Prepares and analyzes; never places orders.
+description: Trading workflow for Arundhati's Charles Schwab / thinkorswim account, with sub-skills for equity research, trend identification (Dow Theory), trend following, mean reversion, RSI, Bollinger Bands, a nightly plan generator (thinkScript + order sheet), and a paper-trading ledger. Use when she asks about a stock, ticker, trend, oversold/overbought, RSI, Bollinger Bands, squeeze, breakout, nightly plan, thinkScript for tomorrow, my positions, divergence, dip, momentum, portfolio split, a trade idea, wants a trade plan, order ticket to enter herself, position sizing, options payoff/greeks math, a watchlist or thinkorswim scan/study (thinkScript), a trade journal entry, a post-trade review, or a backtest of a strategy. Prepares and analyzes; never places orders.
 ---
 
 # Trading (Schwab / thinkorswim)
@@ -39,6 +39,7 @@ description: Trading workflow for Arundhati's Charles Schwab / thinkorswim accou
 - **Mean reversion** (`mean-reversion/SKILL.md`): z-score, half-life, Hurst; buy dips that should snap back.
 - **RSI** (`rsi/SKILL.md`): oversold/overbought, Hayden 40/60 regime, divergences, with penny-stock, intraday and catalyst guardrails. Confirmation layer only.
 - **Bollinger Bands** (`bollinger-bands/SKILL.md`): volatility-breakout entries on volatile stocks, stop at breakout low, middle-band trail, sideways false-signal check.
+- **Nightly plan** (`nightly-plan/SKILL.md`): reads Schwab positions and prices (read-only), runs every signal skill, and writes an order sheet plus a thinkScript study of levels and alerts for her to review and use next day.
 
 ## Useful tools
 - **thinkorswim**: Scan tab (stock hacker/option hacker), Studies, Conditional orders, paperMoney for dry runs. Claude can write **thinkScript** for custom studies, scans, and alerts. Recommend she rehearse new strategies in paperMoney first.
