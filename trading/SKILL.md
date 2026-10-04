@@ -24,6 +24,9 @@ description: Trading workflow for Arundhati's Charles Schwab / thinkorswim accou
 4. **Checklist before she sends**: size within her stated max loss, bid/ask spread sane, correct account, correct contract (expiry/strike/call-put), stop attached, no earnings surprise.
 5. **Journal**: offer to append the plan to `~/Desktop/trading-journal.md` (date, ticker, thesis, entry/stop/target, size, outcome, lesson). Review closed trades for process, not just P/L.
 
+## Sub-skills
+- **Trend identification** (`trend-identification/SKILL.md`): Dow Theory uptrend/downtrend/sideways classification and BUY/SELL/STOP signals. Use it whenever the question is about trend, entries, or exits.
+
 ## Useful tools
 - **thinkorswim**: Scan tab (stock hacker/option hacker), Studies, Conditional orders, paperMoney for dry runs. Claude can write **thinkScript** for custom studies, scans, and alerts. Recommend she rehearse new strategies in paperMoney first.
 - **Schwab Developer API** (developer.schwab.com): needs her own app registration and OAuth. Market-data and read-only account/position endpoints are fine to script for analysis. Do not implement or run order endpoints.
