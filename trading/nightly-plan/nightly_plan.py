@@ -168,7 +168,7 @@ def thinkscript(rows):
 
 
 def digest(rows, report_path):
-    """(title, lines, color) for the notify skill: anything actionable, then what is held."""
+    """(title, lines, color) for notify.send(): anything actionable, then what is held."""
     color = {"BUY CANDIDATE": 0x0F6B4F, "REVIEW EXIT": 0xA2461C}
     act = [r for r in rows if r["decision"] in color]
     lines = []
@@ -187,10 +187,10 @@ def digest(rows, report_path):
 
 
 def send_notification(rows, report_path):
-    """notify/ is a separate skill installed next to trading/; a missing copy must never break the plan."""
+    """notify/ is a shared module installed next to trading/; a missing copy must never break the plan."""
     path = HERE.parent / "notify" / "notify.py"
     if not path.exists():
-        print(f"--notify: notify skill not found at {path} (copy notify/ next to trading/), skipped")
+        print(f"--notify: notify module not found at {path} (copy notify/ next to trading/), skipped")
         return
     spec = importlib.util.spec_from_file_location("notify", path)
     nt = importlib.util.module_from_spec(spec)
@@ -205,7 +205,7 @@ def main():
     ap.add_argument("--positions-json")
     ap.add_argument("--equity", type=float, default=10000)
     ap.add_argument("--out", default=str(Path.home() / "Desktop/paper-trading/plans"))
-    ap.add_argument("--notify", action="store_true", help="post a digest to Discord via the notify skill")
+    ap.add_argument("--notify", action="store_true", help="post a digest to Discord via notify/notify.py")
     a = ap.parse_args()
     symbols = [s.strip().upper() for s in a.watchlist.split(",") if s.strip()]
     if a.csv_dir:

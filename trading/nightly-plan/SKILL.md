@@ -25,7 +25,9 @@ description: Part of the trading skill. Nightly workflow that reads her Schwab p
 ## Phone alerts
 The report ends with an "Alerts to set" table (BUY alert at the entry price, SELL alert at the stop). She creates them as price alerts in the thinkorswim/Schwab mobile app so they push to her phone; the API cannot create alerts, and study alerts from the thinkScript are desktop-only as far as is known. Verify with a test alert and say plainly if delivery is uncertain. She then enters the trade herself on her phone.
 
-**Discord digest:** `--notify` sends a one-embed summary of BUY CANDIDATE / REVIEW EXIT / HOLD rows to the team's Discord channel through the separate `notify` skill (`../notify/`, see its SKILL.md for webhook setup and rules). This covers the night-time digest only; intraday price triggers still come from the broker app alerts above. If `notify/` is not installed or `DISCORD_WEBHOOK_URL` is unset, the script prints a line and still writes the report.
+**Discord digest:** `--notify` sends a one-embed summary of BUY CANDIDATE / REVIEW EXIT / HOLD rows to the team's Discord channel using the shared module `../notify/notify.py`. This covers the night-time digest only; intraday price triggers still come from the broker app alerts above. If `notify/` is not installed next to `trading/` or `DISCORD_WEBHOOK_URL` is unset, the script prints a line and still writes the report.
+- The webhook URL is a secret. It lives only in `DISCORD_WEBHOOK_URL` in her shell profile. Never print it, paste it in chat, or commit it. If it leaks, delete the webhook in Discord (channel settings > Integrations > Webhooks) and create a new one.
+- The webhook can only post into one channel; it cannot read anything. Send only when she asks or runs with `--notify`.
 
 ## Setup (she does this, not Claude)
 - Register a Schwab developer app (market data + read-only accounts), then `pip install schwab-py pandas numpy`.

@@ -1,4 +1,4 @@
-"""Post a message to the team Discord channel. Send-only; knows nothing about trading.
+"""Shared module: post a message to the team Discord channel. Send-only; knows nothing about trading.
 
 Usage:
   import:  send("Title", ["line 1", "line 2"], color=0x0F6B4F)
