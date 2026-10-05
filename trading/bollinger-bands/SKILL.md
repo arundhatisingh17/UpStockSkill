@@ -1,6 +1,6 @@
 ---
 name: bollinger-bands
-description: Part of the trading skill. Bollinger Bands volatility-breakout strategy on daily/weekly charts for volatile stocks: squeeze detection, long entry on a close above the upper band, stop at the breakout candle low, middle-band trailing stop, and a sideways-market false-signal check. Use when she asks about Bollinger Bands, volatility, squeezes, or breakouts.
+description: Part of the trading skill. Bollinger Bands volatility-breakout strategy on daily/weekly charts for volatile stocks: squeeze detection, long entry on a close above the upper band, stop at the breakout candle low, middle-band trailing stop, and a sideways-market false-signal check. Use when she asks about Bollinger Bands, volatility, or squeezes. For judging the breakout candle itself, see breakout.
 ---
 
 # Bollinger Bands (volatility breakout)
@@ -14,7 +14,7 @@ Analysis and simulated signals only; never place orders.
 
 ## Strategy (breakout, long only)
 1. **Squeeze**: bandwidth `(upper - lower) / middle` in its lowest 20% of the last 120 bars = coiled market. A breakout right after a squeeze is the best setup.
-2. **Entry**: the close breaks above the upper band (a fresh cross, not a stock already running above it).
+2. **Entry**: the close breaks above the upper band (a fresh cross, not a stock already running above it). Then judge the candle with `breakout` (big, fresh, no upper wick, volume); a close above the band on a wicky, average-sized, low-volume bar is the classic false breakout.
 3. **Stop-loss**: the low of the breakout candle. Report its distance as risk %, and size so the loss is about 1% of the account.
 4. **Hold and trail**: carry the position and use the **middle band as a trailing stop**. Exit on a close below it.
 

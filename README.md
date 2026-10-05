@@ -11,7 +11,7 @@ The skill splits a portfolio into two parts:
 | Part | Goal | How long you hold | Skills used |
 |---|---|---|---|
 | **Long-term** (default 60%) | Own good companies and let them grow | Months to years | Equity Research |
-| **Swing** (default 40%) | Capture price moves | Days to weeks | Trend Identification, Trend Following, Mean Reversion, RSI, Bollinger Bands, Pivot Points |
+| **Swing** (default 40%) | Capture price moves | Days to weeks | Trend Identification, Trend Following, Mean Reversion, RSI, Bollinger Bands, Pivot Points, Breakout Check |
 
 The swing part is split again: half uses **trend following** (ride a move) and half uses **mean reversion** (buy a dip that should bounce back). The percentages are just starting points that you can change.
 
@@ -67,7 +67,17 @@ The skill looks for two entries, **only in a strong, confirmed uptrend**:
 Then it sets a **stop-loss just below the support**, tells you to **sell about half at the next resistance**, and keep the rest with a **trailing stop at the support** below the price. It skips trades that don't offer at least $1.50 of reward for every $1 risked.
 **Important:** pivots come from past prices, so check the news for overnight surprises. They show where price may react, never a buy or sell signal on their own.
 
-### 8. Nightly Plan: "What do I do tomorrow?"
+### 8. Breakout Check: "Is this breakout real or a fake-out?"
+A close above a line is not enough. This skill grades the **breakout candle** itself with four tests, taken from Indrazith Shantharaj's *How to Make Money with Breakout Trading*:
+- **Big:** the day's range is at least 1.5x the stock's normal range. Big money leaves a big bar.
+- **Fresh:** price crossed the level today, it wasn't already running above it.
+- **No upper wick:** it closed within the top 20% of the day. A long wick means sellers pushed it back.
+- **Volume:** at least 1.5x the 20-day average. Someone with size was buying.
+It also rejects charts full of gaps or long wicks, where stops get hit at random. Every false breakout in the book fails at least one of these; a genuine one passes all four.
+The skill then prints the book's playbook: buy a few ticks **above** the breakout candle's high (let the market confirm first), stop just below its low, raise the stop if the next day is weak, sell 75% at target and let 25% run.
+**For now the nightly plan only shows this as a flag** next to each breakout candidate ("GENUINE 4/4" or "2/4, failed no_wick, volume"). It does not block trades or change entries yet. Watch the flagged vs unflagged results in the paper ledger for a few weeks before turning it into a rule. The volume test needs a `volume` column in your price files.
+
+### 9. Nightly Plan: "What do I do tomorrow?"
 Each evening it reads your positions and recent prices from your Schwab account (**read-only**), runs every skill above, and produces:
 - an **order sheet**: for each stock, a decision (buy candidate, hold, or review exit), a limit price, a stop-loss, how many shares to keep your loss near 1% of the account, and notes;
 - a **thinkorswim script** (thinkScript) that draws your entry, stop and target lines on the chart and sets alerts.
@@ -76,10 +86,10 @@ Add `--notify` to also get a short summary in your Discord channel through the s
 
 You review the sheet at night and enter the orders yourself the next day. Be aware that thinkScript **cannot place orders**; it only draws and alerts, and nothing here ever trades for you. The Schwab connection needs your own developer app and keys, which stay on your computer and are never committed to this repo.
 
-### 9. Notify: "Ping Discord"
+### 10. Notify: "Ping Discord"
 A small shared module (`notify/notify.py`, not a skill) that posts a message to your Discord channel through a webhook. It only sends; it can't read the channel. The nightly plan uses it for `--notify`, and anything else (a weekly ledger summary, an ad hoc "ping us") can reuse it. Set the webhook once in your shell profile: `export DISCORD_WEBHOOK_URL="..."`, and never commit it.
 
-### 10. Paper Trading Ledger: "Practice without real money"
+### 11. Paper Trading Ledger: "Practice without real money"
 A spreadsheet that logs simulated trades, using realistic prices (buy at the ask, sell at the bid), and shows your weekly and compounded returns. Run it for at least 100 trades or a few months before using real funds, and compare yourself to simply holding the S&P 500 (SPY).
 
 ## How the skills work together
@@ -109,7 +119,7 @@ A stock should pass **both** a business check (Equity Research) and a timing che
    - "Research AAPL"
    - "What trend is NVDA in?"
    - "Is MSFT oversold? Does it bounce back?"
-3. For the code tools, save a stock's daily prices as a CSV (columns: `date, high, low, close`) and run:
+3. For the code tools, save a stock's daily prices as a CSV (columns: `date, high, low, close`, plus `open` and `volume` if you can get them; the breakout check uses both) and run:
    ```bash
    python3 trading/trend-identification/trend_detector.py prices.csv
    python3 trading/trend-following/trend_following.py prices.csv
@@ -117,6 +127,7 @@ A stock should pass **both** a business check (Equity Research) and a timing che
    python3 trading/rsi/rsi.py prices.csv --catalyst no
    python3 trading/bollinger-bands/bollinger.py prices.csv
    python3 trading/pivot-points/pivot_points.py prices.csv
+   python3 trading/breakout/breakout.py prices.csv
    python3 trading/nightly-plan/nightly_plan.py --csv-dir ./prices --watchlist AAPL,MSFT
    ```
    These need Python with `pandas` and `numpy`.
@@ -139,6 +150,7 @@ trading/
   rsi/                        momentum gauge + rsi.py
   bollinger-bands/            volatility breakouts + bollinger.py
   pivot-points/               support/resistance + pivot_points.py
+  breakout/                   genuine vs false breakout candle + breakout.py
   nightly-plan/               order sheet + thinkScript + nightly_plan.py
 notify/                       Discord webhook sender (shared module)
 paper-trading/build_ledger.py simulated-trade spreadsheet

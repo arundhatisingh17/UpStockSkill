@@ -9,7 +9,7 @@ description: Part of the trading skill. Nightly workflow that reads her Schwab p
 
 ## What it does
 1. **Read** her positions and account value, and daily price history for the watchlist plus every held symbol (Schwab API via `schwab-py`, read-only calls only). Fallback: a folder of `TICKER.csv` files.
-2. **Run the signal skills** on each symbol: trend-identification (Dow), trend-following, mean-reversion, RSI, Bollinger Bands.
+2. **Run the signal skills** on each symbol: trend-identification (Dow), trend-following, mean-reversion, RSI, Bollinger Bands, pivot points. Any symbol with a breakout path (Bollinger, 20-day high, pivot breakout) or that simply closed above its prior 20-day high also gets the `breakout` quality tests (big candle, fresh cross, no upper wick, volume) and the smooth-chart filter. These appear as a **flag** in the notes and the Discord digest ("GENUINE 4/4" or "2/4, failed no_wick, volume"); they do not block or create a candidate yet.
 3. **Decide per symbol** using the portfolio rules:
    - Held + an exit signal (Dow SELL/STOP, trend-following exit) -> `REVIEW EXIT`.
    - Held, no exit -> `HOLD` with an ATR stop.

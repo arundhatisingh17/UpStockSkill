@@ -41,6 +41,7 @@ MR = load_mod("mean-reversion/mean_reversion.py", "mr")
 RS = load_mod("rsi/rsi.py", "rs")
 BB = load_mod("bollinger-bands/bollinger.py", "bb")
 PV = load_mod("pivot-points/pivot_points.py", "pv")
+BO = load_mod("breakout/breakout.py", "bo")
 
 
 # ---------- data (read-only) ----------
@@ -113,6 +114,25 @@ def evaluate(sym, df, held):
     if pv.get("decision", "").startswith("LONG"):
         paths.insert(0, ("Pivot " + pv["setup"].split()[0].lower(), pv["stop"]))
     kinds = {p[0].split()[0] for p in paths}
+
+    # Breakout quality (flags only for now: shown, not enforced). Runs when a breakout path fired or when today's
+    # close cleared the prior 20-day high, so a genuine candle the strategies missed still gets a heads-up.
+    # Level = Bollinger upper band if that is the only trigger, else the prior 20-day high. See breakout/SKILL.md.
+    bq = None
+    over_20d_high = len(df) > 21 and close > float(df["high"].iloc[-21:-1].max())
+    breakout_path = bool(kinds & {"Bollinger", "Trend"}) or ("Pivot" in kinds and pv.get("setup", "").lower().startswith("breakout"))
+    if breakout_path or over_20d_high:
+        level = bb["upper"] if kinds == {"Bollinger"} and bb.get("status") == "OK" else None
+        q, sm = BO.quality(df, level=level), BO.smooth(df)
+        if q.get("status") == "OK":
+            bq = ("GENUINE " if q["genuine"] else "") + q["summary"]
+            where = "" if breakout_path else " (closed above the 20-day high; no strategy path fired, heads-up only)"
+            notes.append(f"Breakout candle: {bq}{where} [{q['detail']}]")
+        else:
+            notes.append("Breakout candle: " + q["reason"])
+        if not sm["ok"]:
+            bq = (bq or "") + f"; chart not smooth ({sm['reason']})"
+            notes.append(f"Chart not smooth: {sm['reason']} (breakout tests unreliable here)")
     conflict = "Mean" in kinds and ("Bollinger" in kinds or "Trend" in kinds)
     if rs.get("status") == "REJECTED":
         notes.append("RSI unavailable: " + rs["reason"])
@@ -134,7 +154,7 @@ def evaluate(sym, df, held):
     elif paths:
         decision, why, stop = "BUY CANDIDATE", " + ".join(p[0] for p in paths), paths[0][1]
     return {"sym": sym, "close": close, "trend": trend, "adx": tf["adx"], "decision": decision, "why": why,
-            "stop": stop, "paths": len(paths), "mr_target": mr["target_exit"], "pv": pv, "notes": notes,
+            "stop": stop, "paths": len(paths), "mr_target": mr["target_exit"], "pv": pv, "bq": bq, "notes": notes,
             "date": str(last["date"])}
 
 
@@ -175,7 +195,8 @@ def digest(rows, report_path):
     for r in act:
         if r["decision"] == "BUY CANDIDATE":
             lines.append(f"**{r['sym']}** BUY CANDIDATE: limit {r['entry']}, stop {r['stop']}, "
-                         f"{r['shares'] or 0} sh (${r['risk'] or 0} at risk). {r['why']}")
+                         f"{r['shares'] or 0} sh (${r['risk'] or 0} at risk). {r['why']}"
+                         + (f" | breakout candle: {r['bq']}" if r.get("bq") else ""))
         else:
             lines.append(f"**{r['sym']}** REVIEW EXIT: {r['why']}")
     held = [r["sym"] for r in rows if r["decision"] == "HOLD"]
