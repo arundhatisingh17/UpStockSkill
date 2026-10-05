@@ -72,9 +72,14 @@ Each evening it reads your positions and recent prices from your Schwab account 
 - an **order sheet**: for each stock, a decision (buy candidate, hold, or review exit), a limit price, a stop-loss, how many shares to keep your loss near 1% of the account, and notes;
 - a **thinkorswim script** (thinkScript) that draws your entry, stop and target lines on the chart and sets alerts.
 
+Add `--notify` to also get a short summary in your Discord channel through the **Notify** skill (see below). For real-time "price hit my stop" alerts during the day, use the thinkorswim or Schwab app's price alerts.
+
 You review the sheet at night and enter the orders yourself the next day. Be aware that thinkScript **cannot place orders**; it only draws and alerts, and nothing here ever trades for you. The Schwab connection needs your own developer app and keys, which stay on your computer and are never committed to this repo.
 
-### 9. Paper Trading Ledger: "Practice without real money"
+### 9. Notify: "Ping both of us"
+A small, separate skill that posts a message to your Discord channel through a webhook. It only sends; it can't read the channel. The nightly plan uses it for `--notify`, and anything else (a weekly ledger summary, an ad hoc "ping us") can reuse it. Set the webhook once in your shell profile: `export DISCORD_WEBHOOK_URL="..."`, and never commit it.
+
+### 10. Paper Trading Ledger: "Practice without real money"
 A spreadsheet that logs simulated trades, using realistic prices (buy at the ask, sell at the bid), and shows your weekly and compounded returns. Run it for at least 100 trades or a few months before using real funds, and compare yourself to simply holding the S&P 500 (SPY).
 
 ## How the skills work together
@@ -99,7 +104,7 @@ A stock should pass **both** a business check (Equity Research) and a timing che
 
 ## Quick start
 
-1. Install [Claude Code](https://claude.ai/claude-code) and copy the `trading/` folder into `~/.claude/skills/`.
+1. Install [Claude Code](https://claude.ai/claude-code) and copy the `trading/` and `notify/` folders into `~/.claude/skills/` (`cp -r trading notify ~/.claude/skills/`).
 2. Ask Claude things like:
    - "Research AAPL"
    - "What trend is NVDA in?"
@@ -135,5 +140,6 @@ trading/
   bollinger-bands/            volatility breakouts + bollinger.py
   pivot-points/               support/resistance + pivot_points.py
   nightly-plan/               order sheet + thinkScript + nightly_plan.py
+notify/                       Discord webhook sender (separate skill)
 paper-trading/build_ledger.py simulated-trade spreadsheet
 ```

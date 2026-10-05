@@ -25,6 +25,8 @@ description: Part of the trading skill. Nightly workflow that reads her Schwab p
 ## Phone alerts
 The report ends with an "Alerts to set" table (BUY alert at the entry price, SELL alert at the stop). She creates them as price alerts in the thinkorswim/Schwab mobile app so they push to her phone; the API cannot create alerts, and study alerts from the thinkScript are desktop-only as far as is known. Verify with a test alert and say plainly if delivery is uncertain. She then enters the trade herself on her phone.
 
+**Discord digest:** `--notify` sends a one-embed summary of BUY CANDIDATE / REVIEW EXIT / HOLD rows to the team's Discord channel through the separate `notify` skill (`../notify/`, see its SKILL.md for webhook setup and rules). This covers the night-time digest only; intraday price triggers still come from the broker app alerts above. If `notify/` is not installed or `DISCORD_WEBHOOK_URL` is unset, the script prints a line and still writes the report.
+
 ## Setup (she does this, not Claude)
 - Register a Schwab developer app (market data + read-only accounts), then `pip install schwab-py pandas numpy`.
 - Create the token file once with schwab-py's login flow, and set env vars `SCHWAB_APP_KEY`, `SCHWAB_APP_SECRET`, `SCHWAB_TOKEN_PATH`. Never paste them in chat or commit them. The refresh token expires after about 7 days, so she logs in again weekly.

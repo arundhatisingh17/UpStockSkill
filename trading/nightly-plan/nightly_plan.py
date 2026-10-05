@@ -10,6 +10,7 @@ Usage:
 Schwab auth uses env vars YOU set (never paste them into chat or commit them):
   SCHWAB_APP_KEY  SCHWAB_APP_SECRET  SCHWAB_TOKEN_PATH   (token file made once by schwab-py's login flow)
 Output: ~/Desktop/paper-trading/plans/<date>/report.md and NightlyPlan.ts
+Optional: --notify posts a digest to Discord through the sibling notify/ skill (webhook in env var DISCORD_WEBHOOK_URL).
 """
 import argparse
 import importlib.util
@@ -166,6 +167,37 @@ def thinkscript(rows):
     return "\n".join(lines) + "\n"
 
 
+def digest(rows, report_path):
+    """(title, lines, color) for the notify skill: anything actionable, then what is held."""
+    color = {"BUY CANDIDATE": 0x0F6B4F, "REVIEW EXIT": 0xA2461C}
+    act = [r for r in rows if r["decision"] in color]
+    lines = []
+    for r in act:
+        if r["decision"] == "BUY CANDIDATE":
+            lines.append(f"**{r['sym']}** BUY CANDIDATE: limit {r['entry']}, stop {r['stop']}, "
+                         f"{r['shares'] or 0} sh (${r['risk'] or 0} at risk). {r['why']}")
+        else:
+            lines.append(f"**{r['sym']}** REVIEW EXIT: {r['why']}")
+    held = [r["sym"] for r in rows if r["decision"] == "HOLD"]
+    if held:
+        lines.append("Holding: " + ", ".join(held))
+    lines.append(("\n" if lines else "") + f"Analysis only, nothing was ordered. Full sheet: `{report_path}`")
+    title = f"Nightly plan {date.today()}: {len(act)} to review" if act else f"Nightly plan {date.today()}: no trades"
+    return title, lines, color[act[0]["decision"]] if act else 0x6B6B63
+
+
+def send_notification(rows, report_path):
+    """notify/ is a separate skill installed next to trading/; a missing copy must never break the plan."""
+    path = HERE.parent / "notify" / "notify.py"
+    if not path.exists():
+        print(f"--notify: notify skill not found at {path} (copy notify/ next to trading/), skipped")
+        return
+    spec = importlib.util.spec_from_file_location("notify", path)
+    nt = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(nt)
+    nt.send(*digest(rows, report_path))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--watchlist", default="")
@@ -173,6 +205,7 @@ def main():
     ap.add_argument("--positions-json")
     ap.add_argument("--equity", type=float, default=10000)
     ap.add_argument("--out", default=str(Path.home() / "Desktop/paper-trading/plans"))
+    ap.add_argument("--notify", action="store_true", help="post a digest to Discord via the notify skill")
     a = ap.parse_args()
     symbols = [s.strip().upper() for s in a.watchlist.split(",") if s.strip()]
     if a.csv_dir:
@@ -230,6 +263,8 @@ def main():
     (out / "NightlyPlan.ts").write_text(thinkscript(rows))
     print("Wrote", out / "report.md", "and", out / "NightlyPlan.ts")
     print("\n".join(md[5:5 + len(rows) + 2]))
+    if a.notify:
+        send_notification(rows, out / "report.md")
 
 
 if __name__ == "__main__":
